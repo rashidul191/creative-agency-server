@@ -14,6 +14,8 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.use(express.static('upService'));
+
+
 app.use(fileUpload());
 
 const port = 5000;
@@ -31,19 +33,19 @@ client.connect(err => {
     const addServiceCollection = client.db("creativeAgency").collection("adminAddService");
 
 
-    
+
 
     // review comment part start  
+    // review comment post data
     app.post('/addReview', (req, res) => {
         const reviewDetails = req.body;
-        //  console.log(userDetails);
         reviewCollection.insertOne(reviewDetails)
             .then(result => {
                 console.log(result);
                 res.send(result.insertedCount > 0)
             })
     });
-
+    // review comment get data
     app.get('/reviewByData', (req, res) => {
         const reviewData = req.body;
         console.log(reviewData.reviewData);
@@ -52,15 +54,14 @@ client.connect(err => {
                 res.send(document);
             })
     });
+    // review comment part end
 
     // user order and services list part start
     //user order data post part
     app.post('/addUserDetails', (req, res) => {
         const userDetails = req.body;
-        //  console.log(userDetails);
         userDetailCollection.insertOne(userDetails)
             .then(result => {
-                // console.log(result);
                 res.send(result.insertedCount > 0)
             })
     });
@@ -75,6 +76,37 @@ client.connect(err => {
             })
     });
     // user order and services list part end
+
+
+//  admin Add Service part start
+//add service post
+app.post('/addService', (req, res) => {
+        const file = req.files.file;
+        const serviceDetail =req.body;
+        addServiceCollection.insertOne(serviceDetail,file)
+        .then(result => {
+            res.send(result.insertedCount > 0)
+        })
+        // console.log(name, file, description);
+        file.mv(`${__dirname}/upService/${file.name}`,err =>{
+            if(err){
+                console.log(err);
+                return res.status(500).send({msg: 'Failed to upload Image'});
+            }
+            return res.send({name: file.name, path:`${file.name}`})
+        })
+    });
+
+//add service get
+    app.get('/serviceByData', (req, res) => {
+        const serviceData = req.body;
+        console.log(serviceData.serviceData);
+        addServiceCollection.find({})
+            .toArray((err, document) => {
+                res.send(document);
+            })
+    });    
+    //  admin Add Service part start
 
 
 });
