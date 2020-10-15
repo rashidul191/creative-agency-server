@@ -22,46 +22,61 @@ app.get('/', (req, res) => {
     res.send("hello from db it's working")
 })
 
+
+
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 client.connect(err => {
     const userDetailCollection = client.db("creativeAgency").collection("userDetail");
+    const reviewCollection = client.db("creativeAgency").collection("reviewDetails");
+    const addServiceCollection = client.db("creativeAgency").collection("adminAddService");
 
+
+    
+
+    // review comment part start  
+    app.post('/addReview', (req, res) => {
+        const reviewDetails = req.body;
+        //  console.log(userDetails);
+        reviewCollection.insertOne(reviewDetails)
+            .then(result => {
+                console.log(result);
+                res.send(result.insertedCount > 0)
+            })
+    });
+
+    app.get('/reviewByData', (req, res) => {
+        const reviewData = req.body;
+        console.log(reviewData.reviewData);
+        reviewCollection.find({})
+            .toArray((err, document) => {
+                res.send(document);
+            })
+    });
+
+    // user order and services list part start
+    //user order data post part
     app.post('/addUserDetails', (req, res) => {
         const userDetails = req.body;
         //  console.log(userDetails);
         userDetailCollection.insertOne(userDetails)
             .then(result => {
+                // console.log(result);
                 res.send(result.insertedCount > 0)
             })
     });
 
-    app.post('/userDetailsByData', (req, res) => {
+    //Services list data get part
+    app.get('/userDetailsByData', (req, res) => {
         const userDetailsData = req.body;
         console.log(userDetailsData.userDetailsData);
-        userDetailCollection.find({ topic: userDetailsData.userDetailsData })
+        userDetailCollection.find({})
             .toArray((err, document) => {
                 res.send(document);
             })
-
     });
-    
+    // user order and services list part end
 
-    app.post('/addService', (req, res) =>{
-        const file = req.files.file;
-        const name = req.body.name;
-        const description = req.body.description;
-        console.log(file, name, description);
-        file.mv(`${__dirname}/upService/${file.name}`, err =>{
-          if(err){
-              console.log(err)
-              return res.status(500).send({msg:'Failed to upload Image'});
-          }
 
-          return res.send ({name: file.name, path:`/${file.name}`});
-            
-        })
-       
-    })
 });
 
 
