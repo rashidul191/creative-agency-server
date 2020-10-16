@@ -38,10 +38,17 @@ client.connect(err => {
         const makeAdmin = req.body;
         addAdminCollection.insertOne(makeAdmin)
             .then(result => {
-                console.log(result);
                 res.send(result.insertedCount > 0)
             })
     });
+
+    app.post('/isAdmin', (req, res) => {
+        const email = req.body.email;
+        addAdminCollection.find({ email: email })
+            .toArray((err, admins) => {
+                res.send(admins.length > 0);
+            })
+    })
 
     //make a Admin part end
 
@@ -52,14 +59,12 @@ client.connect(err => {
         const reviewDetails = req.body;
         reviewCollection.insertOne(reviewDetails)
             .then(result => {
-                console.log(result);
                 res.send(result.insertedCount > 0)
             })
     });
     // review comment get data
     app.get('/reviewByData', (req, res) => {
         const reviewData = req.body;
-        console.log(reviewData.reviewData);
         reviewCollection.find({})
             .toArray((err, document) => {
                 res.send(document);
@@ -80,7 +85,6 @@ client.connect(err => {
     //Services list data get part
     app.get('/userDetailsByData', (req, res) => {
         const userDetailsData = req.body;
-        console.log(userDetailsData.userDetailsData);
         userDetailCollection.find({})
             .toArray((err, document) => {
                 res.send(document);
@@ -111,7 +115,6 @@ client.connect(err => {
     //add service get
     app.get('/serviceByData', (req, res) => {
         const serviceData = req.body;
-        console.log(serviceData.serviceData);
         addServiceCollection.find({})
             .toArray((err, document) => {
                 res.send(document);
