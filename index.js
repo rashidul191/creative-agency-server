@@ -31,8 +31,19 @@ client.connect(err => {
     const userDetailCollection = client.db("creativeAgency").collection("userDetail");
     const reviewCollection = client.db("creativeAgency").collection("reviewDetails");
     const addServiceCollection = client.db("creativeAgency").collection("adminAddService");
+    const addAdminCollection = client.db("creativeAgency").collection("addAdmin");
 
+    //make a Admin part start
+    app.post('/addMakeAdmin', (req, res) => {
+        const makeAdmin = req.body;
+        addAdminCollection.insertOne(makeAdmin)
+            .then(result => {
+                console.log(result);
+                res.send(result.insertedCount > 0)
+            })
+    });
 
+    //make a Admin part end
 
 
     // review comment part start  
@@ -78,26 +89,26 @@ client.connect(err => {
     // user order and services list part end
 
 
-//  admin Add Service part start
-//add service post
-app.post('/addService', (req, res) => {
+    //  admin Add Service part start
+    //add service post
+    app.post('/addService', (req, res) => {
         const file = req.files.file;
-        const serviceDetail =req.body;
-        addServiceCollection.insertOne(serviceDetail,file)
-        .then(result => {
-            res.send(result.insertedCount > 0)
-        })
+        const serviceDetail = req.body;
+        addServiceCollection.insertOne(serviceDetail, file)
+            .then(result => {
+                res.send(result.insertedCount > 0)
+            })
         // console.log(name, file, description);
-        file.mv(`${__dirname}/upService/${file.name}`,err =>{
-            if(err){
+        file.mv(`${__dirname}/upService/${file.name}`, err => {
+            if (err) {
                 console.log(err);
-                return res.status(500).send({msg: 'Failed to upload Image'});
+                return res.status(500).send({ msg: 'Failed to upload Image' });
             }
-            return res.send({name: file.name, path:`${file.name}`})
+            return res.send({ name: file.name, path: `${file.name}` })
         })
     });
 
-//add service get
+    //add service get
     app.get('/serviceByData', (req, res) => {
         const serviceData = req.body;
         console.log(serviceData.serviceData);
@@ -105,7 +116,7 @@ app.post('/addService', (req, res) => {
             .toArray((err, document) => {
                 res.send(document);
             })
-    });    
+    });
     //  admin Add Service part start
 
 
