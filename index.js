@@ -95,22 +95,29 @@ client.connect(err => {
 
     //  admin Add Service part start
     //add service post
+    // app.post('/addUserDetails', (req, res) => {
+    //     const userDetails = req.body;
+    //     userDetailCollection.insertOne(userDetails)
+    //         .then(result => {
+    //             res.send(result.insertedCount > 0)
+    //         })
+    // });
     app.post('/addService', (req, res) => {
         const file = req.files.file;
         const serviceDetail = req.body;
-        addServiceCollection.insertOne(serviceDetail, file)
+        addServiceCollection.insertOne(serviceDetail)
             .then(result => {
                 res.send(result.insertedCount > 0)
             })
         // console.log(name, file, description);
-        file.mv(`${__dirname}/upService/${file.name}`, err => {
-            if (err) {
-                console.log(err);
-                return res.status(500).send({ msg: 'Failed to upload Image' });
-            }
-            return res.send({ name: file.name, path: `${file.name}` })
-        })
-    });
+    //     file.mv(`${__dirname}/upService/${file.name}`, err => {
+    //         if (err) {
+    //             console.log(err);
+    //             return res.status(500).send({ msg: 'Failed to upload Image' });
+    //         }
+    //         return res.send({ name: file.name, path: `${file.name}` })
+    //     })
+    // });
 
     //add service get
     app.get('/serviceByData', (req, res) => {
